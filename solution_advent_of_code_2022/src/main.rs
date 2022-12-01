@@ -15,7 +15,7 @@ fn solve_for_certain_day(args: &ChallangeArgs) {
         1 => match args.task {
             1 => println!(
                 "Most calories: {}",
-                day_01::solve_challenge(&args).expect("Error in parsing input")
+                day_01::get_top_calorie(&args).expect("Error in parsing input")
             ),
             2 => println!(
                 "Calories of top 3 evles: {}",
