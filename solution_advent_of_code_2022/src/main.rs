@@ -1,5 +1,5 @@
 use clap::Parser;
-use solution_advent_of_code_2022::{challenge_args::ChallangeArgs, day_01};
+use solution_advent_of_code_2022::{challenge_args::ChallangeArgs, day_01, day_02};
 
 use std::fs;
 use std::io;
@@ -21,6 +21,13 @@ fn solve_for_certain_day(args: &ChallangeArgs) {
                 "Calories of top 3 evles: {}",
                 day_01::get_total_cal_top(args, 3).expect("Error in parsing input")
             ),
+            invalid_task => abort_for_invalid_task(invalid_task),
+        },
+        2 => match args.task {
+            1 => {
+                let total = day_02::calc_score_of_strat(&args.input);
+                println!("The score following the strategy is: {}", total);
+            }
             invalid_task => abort_for_invalid_task(invalid_task),
         },
         unknown_day => abort_for_invalid_day(unknown_day),
