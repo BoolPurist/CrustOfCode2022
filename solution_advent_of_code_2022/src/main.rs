@@ -28,6 +28,10 @@ fn solve_for_certain_day(args: &ChallangeArgs) {
                 let total = day_02::calc_score_of_strat(&args.input);
                 println!("The score following the strategy is: {}", total);
             }
+            2 => {
+                let total = day_02::calc_score_outcome_strat(&args.input);
+                println!("The score following the outcome strategy is: {}", total);
+            }
             invalid_task => abort_for_invalid_task(invalid_task),
         },
         unknown_day => abort_for_invalid_day(unknown_day),
