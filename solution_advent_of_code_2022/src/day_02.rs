@@ -22,19 +22,20 @@ fn calc_one_round(round: &Round, lookup_table: &BeatTable) -> u32 {
     let oppenent = PlayerMoves::from_letter(&round.0);
     let counter = PlayerMoves::from_letter(&round.1);
     let move_score = counter.get_score();
+
     if oppenent == counter {
         return OutcomeScores::Draw.get_score() + move_score;
     }
 
-    if let Some(needed_counter) = lookup_table.get(&oppenent) {
-        return if needed_counter == &counter {
-            OutcomeScores::Win.get_score() + move_score
-        } else {
-            OutcomeScores::Lose.get_score() + move_score
-        };
-    };
+    let needed_counter = lookup_table
+        .get(&oppenent)
+        .expect("No needed counter found for {opponent}");
 
-    panic!("No needed counter found for {:?}", oppenent);
+    if needed_counter == &counter {
+        OutcomeScores::Win.get_score() + move_score
+    } else {
+        OutcomeScores::Lose.get_score() + move_score
+    }
 }
 
 const ROCK_SCORE: u32 = 1u32;
@@ -89,9 +90,9 @@ impl PlayerMoves {
 type BeatTable = HashMap<PlayerMoves, PlayerMoves>;
 fn get_beat_table() -> BeatTable {
     let mut table: BeatTable = HashMap::new();
-    table.insert(PlayerMoves::Rock, PlayerMoves::Scissors);
-    table.insert(PlayerMoves::Paper, PlayerMoves::Rock);
-    table.insert(PlayerMoves::Scissors, PlayerMoves::Paper);
+    table.insert(PlayerMoves::Rock, PlayerMoves::Paper);
+    table.insert(PlayerMoves::Paper, PlayerMoves::Scissors);
+    table.insert(PlayerMoves::Scissors, PlayerMoves::Rock);
     table
 }
 
