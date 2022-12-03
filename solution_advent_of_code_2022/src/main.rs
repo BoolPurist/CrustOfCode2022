@@ -1,5 +1,5 @@
 use clap::Parser;
-use solution_advent_of_code_2022::{challenge_args::ChallangeArgs, day_01, day_02};
+use solution_advent_of_code_2022::{challenge_args::ChallangeArgs, day_01, day_02, day_03};
 
 use std::fs;
 use std::io;
@@ -27,6 +27,13 @@ fn solve_for_certain_day(args: &ChallangeArgs) {
             1 => {
                 let total = day_02::calc_score_of_strat(&args.input);
                 println!("The score following the strategy is: {}", total);
+            }
+            invalid_task => abort_for_invalid_task(invalid_task),
+        },
+        3 => match args.task {
+            1 => {
+                let total = day_03::get_total_prio_of_dups(&args.input);
+                println!("The total of priotities of the duplicates in the rucksacks: {total }");
             }
             invalid_task => abort_for_invalid_task(invalid_task),
         },
