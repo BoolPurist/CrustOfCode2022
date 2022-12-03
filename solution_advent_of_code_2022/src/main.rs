@@ -33,7 +33,11 @@ fn solve_for_certain_day(args: &ChallangeArgs) {
         3 => match args.task {
             1 => {
                 let total = day_03::get_total_prio_of_dups(&args.input);
-                println!("The total of priotities of the duplicates in the rucksacks: {total }");
+                println!("The total of priotities of the duplicates in the rucksacks: {total}");
+            }
+            2 => {
+                let total = day_03::get_total_prio_of_group_badges(&args.input);
+                println!("The total of prios of group badges: {total}");
             }
             invalid_task => abort_for_invalid_task(invalid_task),
         },

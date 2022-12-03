@@ -1,11 +1,19 @@
 use std::collections::HashSet;
 use std::ops;
 
+type AllRucksacks = Vec<Rucksack>;
+type FoundItems = HashSet<char>;
+type RucksackNoComparment = String;
+type Compartment = String;
+
 #[derive(Debug)]
-struct Compartment(String);
+struct FoundGroupBadges(Vec<FoundItemDuplicates>);
 #[derive(Debug)]
 struct Rucksack(Compartment, Compartment);
-type AllRucksacks = Vec<Rucksack>;
+#[derive(Debug)]
+struct RucksackGroup(Vec<[RucksackNoComparment; 3]>);
+#[derive(Debug)]
+struct FoundItemDuplicates(Vec<char>);
 
 const UPPER_CASE_NUM_OFFSET: u32 = 27u32;
 const LOWER_CASE_NUM_OFFSET: u32 = 1u32;
@@ -18,6 +26,79 @@ pub fn get_total_prio_of_dups(input: &str) -> u32 {
     total.0
 }
 
+pub fn get_total_prio_of_group_badges(input: &str) -> u32 {
+    let input_parsed = parse_input(input);
+    let grouped = transform_input_for_group_badges(input_parsed);
+    let group_badges = get_found_group_item(grouped);
+    let total = get_total_prio_grouped(&group_badges);
+
+    total.0
+}
+
+fn get_total_prio_grouped(group_badges: &FoundGroupBadges) -> Prio {
+    group_badges
+        .0
+        .iter()
+        .fold(Prio::default(), |total, badges| {
+            let mut local_total = Prio::default();
+            for one_badge in &badges.0 {
+                let prio =
+                    convert_letter_to_prio(*one_badge).expect("Could not convert char to prio");
+                local_total += prio;
+            }
+            total + local_total
+        })
+}
+
+fn get_found_group_item(find_in: RucksackGroup) -> FoundGroupBadges {
+    FoundGroupBadges(
+        find_in
+            .0
+            .into_iter()
+            .map(|grouped| {
+                let found_in_1 = find_uniques_letters(&grouped[0]);
+                let found_in_2 = find_uniques_letters(&grouped[1]);
+                let found_in_3 = find_uniques_letters(&grouped[2]);
+
+                FoundItemDuplicates(
+                    found_in_1
+                        .intersection(&found_in_2)
+                        .cloned()
+                        .collect::<FoundItems>()
+                        .intersection(&found_in_3)
+                        .cloned()
+                        .collect(),
+                )
+            })
+            .collect(),
+    )
+}
+
+fn transform_input_for_group_badges(to_group: AllRucksacks) -> RucksackGroup {
+    RucksackGroup(
+        to_group
+            .chunks(3)
+            .map(|group_rucksack| {
+                let mut moved_chunk = group_rucksack.into_iter();
+                let first = moved_chunk.next().unwrap();
+                let second = moved_chunk.next().unwrap();
+                let third = moved_chunk.next().unwrap();
+                let combined_first = combine_compartments(&first.0, &first.1);
+                let combined_second = combine_compartments(&second.0, &second.1);
+                let combined_third = combine_compartments(&third.0, &third.1);
+
+                [combined_first, combined_second, combined_third]
+            })
+            .collect(),
+    )
+}
+
+fn combine_compartments(left: &Compartment, right: &Compartment) -> Compartment {
+    let mut left_owned = String::from(left);
+    left_owned.push_str(&right);
+    left_owned
+}
+
 fn calc_duplicate_prios(calc_from: &AllRucksacks) -> Prio {
     calc_from
         .into_iter()
@@ -25,27 +106,22 @@ fn calc_duplicate_prios(calc_from: &AllRucksacks) -> Prio {
             let mut add_to_total = Prio::default();
             let duplicates = find_first_duplicate(next_rucksack);
             for one_dup in duplicates.0 {
-                let numeric_dup = convert_letter_to_char(one_dup);
+                let numeric_dup = convert_letter_to_prio(one_dup);
                 add_to_total += numeric_dup.expect("Could convert char");
             }
-
-            println!("{:?}", add_to_total);
 
             total + add_to_total
         })
 }
 
-type FoundCompartments = HashSet<char>;
-#[derive(Debug)]
-struct FoundDuplicates(Vec<char>);
-fn find_first_duplicate(to_find_in: &Rucksack) -> FoundDuplicates {
+fn find_first_duplicate(to_find_in: &Rucksack) -> FoundItemDuplicates {
     let left_compartment = &to_find_in.0;
     let right_compartment = &to_find_in.1;
 
-    let found_in_left = find_uniques_comparment(left_compartment);
-    let found_in_right = find_uniques_comparment(right_compartment);
+    let found_in_left = find_uniques_letters(&left_compartment);
+    let found_in_right = find_uniques_letters(&right_compartment);
 
-    let duplicates: FoundDuplicates = FoundDuplicates(
+    let duplicates: FoundItemDuplicates = FoundItemDuplicates(
         found_in_left
             .intersection(&found_in_right)
             .cloned()
@@ -53,15 +129,15 @@ fn find_first_duplicate(to_find_in: &Rucksack) -> FoundDuplicates {
     );
 
     return duplicates;
+}
 
-    fn find_uniques_comparment(compartment: &Compartment) -> FoundCompartments {
-        let mut found: FoundCompartments = HashSet::new();
-        for current_item in compartment.0.chars() {
-            _ = !found.insert(current_item);
-        }
-
-        found
+fn find_uniques_letters(compartment: &str) -> FoundItems {
+    let mut found: FoundItems = HashSet::new();
+    for current_item in compartment.chars() {
+        _ = !found.insert(current_item);
     }
+
+    found
 }
 
 #[derive(Debug)]
@@ -71,7 +147,7 @@ enum PrioConvertError {
     IsNotAscii,
     NotUpperOrLowerCaseLetter,
 }
-fn convert_letter_to_char(to_convert: char) -> Result<Prio, PrioConvertError> {
+fn convert_letter_to_prio(to_convert: char) -> Result<Prio, PrioConvertError> {
     if !to_convert.is_ascii() {
         return Err(PrioConvertError::IsNotAscii);
     }
@@ -115,10 +191,7 @@ fn parse_input(to_convert: &str) -> AllRucksacks {
         let half_number_letters = next_line.len() / 2usize;
         let left_compartment: String = next_line.chars().take(half_number_letters).collect();
         let right_compartment: String = next_line.chars().skip(half_number_letters).collect();
-        parsed.push(Rucksack(
-            Compartment(left_compartment),
-            Compartment(right_compartment),
-        ));
+        parsed.push(Rucksack(left_compartment, right_compartment));
     }
 
     parsed
