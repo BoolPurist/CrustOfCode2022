@@ -79,15 +79,15 @@ fn transform_input_for_group_badges(to_group: AllRucksacks) -> RucksackGroup {
         to_group
             .chunks(3)
             .map(|group_rucksack| {
-                let mut moved_chunk = group_rucksack.into_iter();
-                let first = moved_chunk.next().unwrap();
-                let second = moved_chunk.next().unwrap();
-                let third = moved_chunk.next().unwrap();
-                let combined_first = combine_compartments(&first.0, &first.1);
-                let combined_second = combine_compartments(&second.0, &second.1);
-                let combined_third = combine_compartments(&third.0, &third.1);
+                if let [first, second, third] = group_rucksack {
+                    let combined_first = combine_compartments(&first.0, &first.1);
+                    let combined_second = combine_compartments(&second.0, &second.1);
+                    let combined_third = combine_compartments(&third.0, &third.1);
 
-                [combined_first, combined_second, combined_third]
+                    return [combined_first, combined_second, combined_third];
+                }
+
+                panic!("Every item as a slice should have 3 elements")
             })
             .collect(),
     )
@@ -132,11 +132,8 @@ fn find_first_duplicate(to_find_in: &Rucksack) -> FoundItemDuplicates {
 }
 
 fn find_uniques_letters(compartment: &str) -> FoundItems {
-    let mut found: FoundItems = HashSet::new();
-    for current_item in compartment.chars() {
-        _ = !found.insert(current_item);
-    }
-
+    let mut found: FoundItems = HashSet::with_capacity(compartment.len());
+    found.extend(compartment.chars());
     found
 }
 
@@ -185,14 +182,14 @@ impl Default for Prio {
 }
 
 fn parse_input(to_convert: &str) -> AllRucksacks {
-    let mut parsed: AllRucksacks = Vec::new();
+    to_convert
+        .lines()
+        .map(|next_line| {
+            let half_number_letters = next_line.len() / 2usize;
+            let left_compartment: String = next_line.chars().take(half_number_letters).collect();
+            let right_compartment: String = next_line.chars().skip(half_number_letters).collect();
 
-    for next_line in to_convert.lines() {
-        let half_number_letters = next_line.len() / 2usize;
-        let left_compartment: String = next_line.chars().take(half_number_letters).collect();
-        let right_compartment: String = next_line.chars().skip(half_number_letters).collect();
-        parsed.push(Rucksack(left_compartment, right_compartment));
-    }
-
-    parsed
+            Rucksack(left_compartment, right_compartment)
+        })
+        .collect()
 }
