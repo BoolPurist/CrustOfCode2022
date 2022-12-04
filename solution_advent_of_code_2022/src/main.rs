@@ -1,5 +1,5 @@
 use clap::Parser;
-use solution_advent_of_code_2022::{challenge_args::ChallangeArgs, day_01, day_02, day_03};
+use solution_advent_of_code_2022::{challenge_args::ChallangeArgs, day_01, day_02, day_03, day_04};
 
 use std::fs;
 use std::io;
@@ -42,6 +42,16 @@ fn solve_for_certain_day(args: &ChallangeArgs) {
             2 => {
                 let total = day_03::get_total_prio_of_group_badges(&args.input);
                 println!("The total of prios of group badges: {total}");
+            }
+            invalid_task => abort_for_invalid_task(invalid_task),
+        },
+        4 => match args.task {
+            1 => {
+                let number_fully_contained = day_04::calc_number_contained_assignment(&args.input);
+                println!(
+                    "Number of section fully contained by another: {}",
+                    number_fully_contained
+                );
             }
             invalid_task => abort_for_invalid_task(invalid_task),
         },
