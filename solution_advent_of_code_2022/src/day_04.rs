@@ -79,7 +79,7 @@ struct Assignment {
 
 impl Assignment {
     fn new(start: u32, end: u32) -> Self {
-        Assignment { start, end }
+        Self { start, end }
     }
 
     fn is_contained_fully_by(&self, other: &Self) -> bool {
@@ -112,6 +112,6 @@ impl FromStr for Assignment {
         let start: u32 = left.parse()?;
         let end: u32 = right.parse()?;
 
-        Ok(Assignment::new(start, end))
+        Ok(Self::new(start, end))
     }
 }
