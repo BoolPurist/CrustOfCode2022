@@ -8,6 +8,12 @@ pub fn calc_number_contained_assignment(input: &str) -> u32 {
     count_total_containments(&parsed)
 }
 
+pub fn calc_for_any_common_section(input: &str) -> u32 {
+    let parsed = parse_input(input);
+
+    count_any_section_containment(&parsed)
+}
+
 fn count_total_containments(parsed_input: &PuzzelInput) -> u32 {
     return parsed_input
         .into_iter()
@@ -22,12 +28,27 @@ fn count_total_containments(parsed_input: &PuzzelInput) -> u32 {
         });
 
     fn get_one_or_zero(one: &Assignment, other: &Assignment) -> u32 {
-        if one.is_contained_by(other) {
+        if one.is_contained_fully_by(other) {
             1u32
         } else {
             0u32
         }
     }
+}
+
+fn count_any_section_containment(parsed_input: &PuzzelInput) -> u32 {
+    parsed_input
+        .into_iter()
+        .fold(u32::default(), |total, pair| {
+            let (left, right) = pair;
+            let to_add = if left.has_any_common_section(right) {
+                1u32
+            } else {
+                0u32
+            };
+
+            total + to_add
+        })
 }
 
 fn parse_input(input: &str) -> PuzzelInput {
@@ -61,8 +82,24 @@ impl Assignment {
         Assignment { start, end }
     }
 
-    fn is_contained_by(&self, other: &Self) -> bool {
+    fn is_contained_fully_by(&self, other: &Self) -> bool {
         self.start >= other.start && self.end <= other.end
+    }
+
+    fn has_any_common_section(&self, other: &Self) -> bool {
+        let self_common_from_start = is_in_interval(self.start, other);
+        let self_common_from_end = is_in_interval(self.end, other);
+        let other_common_from_start = is_in_interval(other.start, self);
+        let other_common_from_end = is_in_interval(other.end, self);
+
+        return self_common_from_start
+            || self_common_from_end
+            || other_common_from_start
+            || other_common_from_end;
+
+        fn is_in_interval(point: u32, interval: &Assignment) -> bool {
+            point >= interval.start && point <= interval.end
+        }
     }
 }
 

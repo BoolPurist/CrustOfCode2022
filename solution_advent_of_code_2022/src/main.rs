@@ -53,6 +53,13 @@ fn solve_for_certain_day(args: &ChallangeArgs) {
                     number_fully_contained
                 );
             }
+            2 => {
+                let number_any_common_section = day_04::calc_for_any_common_section(&args.input);
+                println!(
+                    "Number lines with any commond section: {}",
+                    number_any_common_section
+                );
+            }
             invalid_task => abort_for_invalid_task(invalid_task),
         },
         unknown_day => abort_for_invalid_day(unknown_day),
