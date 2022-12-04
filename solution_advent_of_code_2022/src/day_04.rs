@@ -87,18 +87,16 @@ impl Assignment {
     }
 
     fn has_any_common_section(&self, other: &Self) -> bool {
-        let self_common_from_start = is_in_interval(self.start, other);
-        let self_common_from_end = is_in_interval(self.end, other);
-        let other_common_from_start = is_in_interval(other.start, self);
-        let other_common_from_end = is_in_interval(other.end, self);
+        let (smaller_start, bigger_start) = Self::sort_by_start(self, other);
 
-        return self_common_from_start
-            || self_common_from_end
-            || other_common_from_start
-            || other_common_from_end;
+        smaller_start.end >= bigger_start.start
+    }
 
-        fn is_in_interval(point: u32, interval: &Assignment) -> bool {
-            point >= interval.start && point <= interval.end
+    fn sort_by_start<'a>(left: &'a Self, right: &'a Self) -> (&'a Self, &'a Self) {
+        if left.start <= right.start {
+            (left, right)
+        } else {
+            (right, left)
         }
     }
 }
