@@ -1,7 +1,6 @@
+use crate::parsing;
 use core::str::FromStr;
-use regex::Regex;
 use std::collections::VecDeque;
-
 type CrateCells = Vec<Option<char>>;
 type CrateToFillIn = Vec<CrateCells>;
 
@@ -47,37 +46,21 @@ impl FromStr for Instruction {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let re = Regex::new(r"move (\d+) from (\d+) to (\d+)")
-            .expect("Could construct regex for an instruction");
+        let seq = parsing::get_seq_from_regex(r"move (\d+) from (\d+) to (\d+)", s, 3)
+            .expect("Could not parse instruction");
 
-        let captures = re
-            .captures(s.trim())
-            .expect("Could extract numbers for instruction");
+        let mut numbers = seq
+            .into_iter()
+            .map(|to_parse| to_parse.parse::<u32>().expect("Could not parse to number"));
 
-        let movement: u32 = captures
-            .get(1)
-            .expect("No group match for movement")
-            .as_str()
-            .parse()
-            .expect("Could not extract move amount");
-        let start: u32 = captures
-            .get(2)
-            .expect("No group match for start")
-            .as_str()
-            .parse()
-            .expect("Could not extract start amount");
-        let dest: u32 = captures
-            .get(3)
-            .expect("No group match for dest")
-            .as_str()
-            .parse()
-            .expect("Could not extract dest amount");
-
-        Ok(Self {
-            movement,
-            start,
-            dest,
-        })
+        match (numbers.next(), numbers.next(), numbers.next()) {
+            (Some(movement), Some(start), Some(dest)) => Ok(Self {
+                movement,
+                start,
+                dest,
+            }),
+            _ => panic!("Could not parse instruction"),
+        }
     }
 }
 #[derive(Debug)]
@@ -177,7 +160,7 @@ fn extract_crates_from_input(
         .iter()
         .take(to_bottom_crates)
         .rev()
-        .map(|line| get_creates_from_line(line))
+        .map(|line| get_crates_from_line(line))
         .collect();
 
     let number_creates_line = crates
@@ -189,10 +172,9 @@ fn extract_crates_from_input(
     crane.fill_in_crates(crates);
 }
 
-fn get_creates_from_line(line: &str) -> CrateCells {
-    line.chars()
-        .collect::<Vec<char>>()
-        .chunks(4)
+fn get_crates_from_line(line: &str) -> CrateCells {
+    parsing::map_line_to_chunk_vec(line, 4)
+        .into_iter()
         .map(|create| {
             let ident = create[1];
             if ident.is_whitespace() {
