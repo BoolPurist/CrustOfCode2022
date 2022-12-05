@@ -29,16 +29,31 @@ pub fn get_seq_from_regex<'a>(
 }
 
 pub type Lines<'a> = Vec<&'a str>;
-pub fn split_lines_where<'a, P>(input: &'a str, perdicate: P) -> (Lines<'a>, Lines<'a>)
+pub fn split_lines_where_after<'a, P>(input: &'a str, perdicate: P) -> (Lines<'a>, Lines<'a>)
 where
     P: Fn(&str) -> bool,
 {
-    let where_split = match input.lines().position(|line| perdicate(line)) {
-        Some(position) => position + 1,
-        None => return (input.lines().collect(), Vec::new()),
+    split_lines_where(input, perdicate, true)
+}
+
+pub fn split_lines_where_before<'a, P>(input: &'a str, perdicate: P) -> (Lines<'a>, Lines<'a>)
+where
+    P: Fn(&str) -> bool,
+{
+    split_lines_where(input, perdicate, false)
+}
+
+fn split_lines_where<'a, P>(input: &'a str, perdicate: P, after: bool) -> (Lines<'a>, Lines<'a>)
+where
+    P: Fn(&str) -> bool,
+{
+    let lines: Lines<'_> = input.lines().collect();
+    let where_split = match lines.iter().position(|line| perdicate(line)) {
+        Some(position) => position + if after { 1 } else { 0 },
+        None => return (lines.into_iter().collect(), Vec::new()),
     };
 
-    let left = input.lines().take(where_split);
+    let left = lines.into_iter().take(where_split);
     let right = input.lines().skip(where_split);
 
     (left.collect(), right.collect())
