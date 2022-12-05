@@ -1,5 +1,7 @@
 use clap::Parser;
-use solution_advent_of_code_2022::{challenge_args::ChallangeArgs, day_01, day_02, day_03, day_04};
+use solution_advent_of_code_2022::{
+    challenge_args::ChallangeArgs, day_01, day_02, day_03, day_04, day_05,
+};
 
 use std::fs;
 use std::io;
@@ -73,10 +75,12 @@ fn solve_for_certain_day(args: &ChallangeArgs) {
         },
         DAY_05 => match args.task {
             TASK_ONE => {
-                println!("Task 1, args: {}", args.input)
+                let list_of_top_9000 = day_05::get_tops_stack_9000(&args.input);
+                println!("All letters after 9000 {}", list_of_top_9000);
             }
             TASK_TWO => {
-                println!("Task 2, args: {}", args.input)
+                let list_of_top_9001 = day_05::get_tops_stack_9001(&args.input);
+                println!("All letters after 9001 {}", list_of_top_9001);
             }
             invalid_task => abort_for_invalid_task(invalid_task),
         },
