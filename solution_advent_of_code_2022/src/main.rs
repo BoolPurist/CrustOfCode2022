@@ -4,6 +4,15 @@ use solution_advent_of_code_2022::{challenge_args::ChallangeArgs, day_01, day_02
 use std::fs;
 use std::io;
 
+const TASK_ONE: u32 = 1;
+const TASK_TWO: u32 = 2;
+
+const DAY_01: u32 = 1;
+const DAY_02: u32 = 2;
+const DAY_03: u32 = 3;
+const DAY_04: u32 = 4;
+const DAY_05: u32 = 5;
+
 fn main() {
     let mut args: ChallangeArgs = ChallangeArgs::parse();
     read_file_if_needed(&mut args).expect("Could read not input from file.");
@@ -12,53 +21,62 @@ fn main() {
 
 fn solve_for_certain_day(args: &ChallangeArgs) {
     match args.day {
-        1 => match args.task {
-            1 => println!(
+        DAY_01 => match args.task {
+            TASK_ONE => println!(
                 "Most calories: {}",
                 day_01::get_top_calorie(&args).expect("Error in parsing input")
             ),
-            2 => println!(
+            TASK_TWO => println!(
                 "Calories of top 3 evles: {}",
                 day_01::get_total_cal_top(args, 3).expect("Error in parsing input")
             ),
             invalid_task => abort_for_invalid_task(invalid_task),
         },
-        2 => match args.task {
-            1 => {
+        DAY_02 => match args.task {
+            TASK_ONE => {
                 let total = day_02::calc_score_of_strat(&args.input);
                 println!("The score following the strategy is: {}", total);
             }
-            2 => {
+            TASK_TWO => {
                 let total = day_02::calc_score_outcome_strat(&args.input);
                 println!("The score following the outcome strategy is: {}", total);
             }
             invalid_task => abort_for_invalid_task(invalid_task),
         },
-        3 => match args.task {
-            1 => {
+        DAY_03 => match args.task {
+            TASK_ONE => {
                 let total = day_03::get_total_prio_of_dups(&args.input);
                 println!("The total of priotities of the duplicates in the rucksacks: {total}");
             }
-            2 => {
+            TASK_TWO => {
                 let total = day_03::get_total_prio_of_group_badges(&args.input);
                 println!("The total of prios of group badges: {total}");
             }
             invalid_task => abort_for_invalid_task(invalid_task),
         },
-        4 => match args.task {
-            1 => {
+        DAY_04 => match args.task {
+            TASK_ONE => {
                 let number_fully_contained = day_04::calc_number_contained_assignment(&args.input);
                 println!(
                     "Number of section fully contained by another: {}",
                     number_fully_contained
                 );
             }
-            2 => {
+            TASK_TWO => {
                 let number_any_common_section = day_04::calc_for_any_common_section(&args.input);
                 println!(
                     "Number lines with any commond section: {}",
                     number_any_common_section
                 );
+            }
+            invalid_task => abort_for_invalid_task(invalid_task),
+        },
+        DAY_05 => match args.task {
+            TASK_ONE => {
+                println!("Task 1, args: {}", args.input)
+            }
+            TASK_TWO => {
+                println!("Task 2, args: {}", args.input)
             }
             invalid_task => abort_for_invalid_task(invalid_task),
         },
