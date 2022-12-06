@@ -14,6 +14,7 @@ const DAY_02: u32 = 2;
 const DAY_03: u32 = 3;
 const DAY_04: u32 = 4;
 const DAY_05: u32 = 5;
+const DAY_06: u32 = 6;
 
 fn main() {
     let mut args: ChallangeArgs = ChallangeArgs::parse();
@@ -81,6 +82,15 @@ fn solve_for_certain_day(args: &ChallangeArgs) {
             TASK_TWO => {
                 let list_of_top_9001 = day_05::get_tops_stack_9001(&args.input);
                 println!("All letters after 9001 {}", list_of_top_9001);
+            }
+            invalid_task => abort_for_invalid_task(invalid_task),
+        },
+        DAY_06 => match args.task {
+            TASK_ONE => {
+                println!("Task 1, input: {}", args.input);
+            }
+            TASK_TWO => {
+                println!("Task 2, input: {}", args.input);
             }
             invalid_task => abort_for_invalid_task(invalid_task),
         },
