@@ -1,6 +1,6 @@
 use clap::Parser;
 use solution_advent_of_code_2022::{
-    challenge_args::ChallangeArgs, day_01, day_02, day_03, day_04, day_05,
+    challenge_args::ChallangeArgs, day_01, day_02, day_03, day_04, day_05, day_06,
 };
 
 use std::fs;
@@ -87,10 +87,15 @@ fn solve_for_certain_day(args: &ChallangeArgs) {
         },
         DAY_06 => match args.task {
             TASK_ONE => {
-                println!("Task 1, input: {}", args.input);
+                let start_of_first_packe = day_06::get_end_of_first_packet_start(&args.input, 4);
+                println!("Start marker of 1. packet ends at {}", start_of_first_packe);
             }
             TASK_TWO => {
-                println!("Task 2, input: {}", args.input);
+                let start_of_first_message = day_06::get_end_of_first_packet_start(&args.input, 14);
+                println!(
+                    "Start marker of 1. message ends at {}",
+                    start_of_first_message
+                );
             }
             invalid_task => abort_for_invalid_task(invalid_task),
         },
