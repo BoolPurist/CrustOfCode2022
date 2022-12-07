@@ -8,6 +8,7 @@ use std::io;
 
 const TASK_ONE: u32 = 1;
 const TASK_TWO: u32 = 2;
+const TASK_THREE: u32 = 3;
 
 const DAY_01: u32 = 1;
 const DAY_02: u32 = 2;
@@ -122,7 +123,12 @@ fn solve_for_certain_day(args: &ChallangeArgs) {
                          name, 
                          freed
                          );
-            }
+            },
+            TASK_THREE => {
+              let file_layout = day_07::draw_file_system(&args.input);
+
+              println!("{file_layout}")
+            },
             invalid_task => abort_for_invalid_task(invalid_task),
         },
         unknown_day => abort_for_invalid_day(unknown_day),

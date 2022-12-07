@@ -115,6 +115,14 @@ pub fn get_directory_to_delete(
     }
 }
 
+pub fn draw_file_system(input: &str) -> String {
+    let input_parsed = parse_file_system(input);
+    let tree = build_file_tree(input_parsed);
+
+    dbg!(&tree);
+    tree.to_string()
+}
+
 fn create_list_dir_sizes(tree: &FileTree) -> FileSizes {
     let mut sizes: FileSizes = Default::default();
 
@@ -127,8 +135,8 @@ fn create_list_dir_sizes(tree: &FileTree) -> FileSizes {
         for entry in directory.entries.iter() {
             match entry {
                 HardNode::File(_, size) => total_size += *size as SizeOfFile,
-                HardNode::Dir(name) => {
-                    let next_path = FileTree::construct_path(&name, &directory);
+                HardNode::Dir(_) => {
+                    let next_path = directory.construct_new_path(entry);
                     total_size += traverse_to(tree, &next_path, size_journal);
                 }
             }
@@ -273,10 +281,6 @@ impl FileTree {
         }
     }
 
-    fn construct_path(base: &str, dir: &Directory) -> String {
-        format!("{}{}/", dir.get_full_path(), base)
-    }
-
     pub fn get_entries_ref_from(&mut self, path: &str) -> Option<&mut Directory> {
         self.1.get_mut(path)
     }
@@ -292,7 +296,7 @@ impl Display for FileTree {
         fn traverse(tree: &FileTree, next: &str, indent: usize, output: &mut String) {
             let directory = tree.1.get(next).expect("No directory found for given next");
             let mut prefix = " ".repeat(indent);
-            prefix = format!("-{prefix}");
+            prefix = format!("{prefix}- ");
 
             for entry in directory.entries.iter() {
                 match entry {
@@ -301,7 +305,7 @@ impl Display for FileTree {
                     }
                     HardNode::Dir(name) => {
                         output.push_str(&format!("{prefix}{} (dir)\n", name));
-                        let new_path = FileTree::construct_path(&name, &directory);
+                        let new_path = directory.construct_new_path(entry);
                         traverse(tree, &new_path, indent + 2, output);
                     }
                 }
@@ -316,10 +320,24 @@ impl Directory {
             parent: parent.to_string(),
             entries: Default::default(),
             name: name.to_string(),
-            full_path: format!("{}{}/", parent, name),
+            full_path: Self::construct_path(parent, name),
         }
     }
 
+    fn construct_path(base: &str, name: &str) -> String {
+        if base == "/" {
+            format!("{}{}", base, name)
+        } else {
+            format!("{}/{}", base, name)
+        }
+    }
+
+    fn construct_new_path(&self, cd: &HardNode) -> String {
+        match cd {
+            HardNode::Dir(go_to) => Self::construct_path(&self.get_full_path().to_string(), go_to),
+            _ => panic!("No path to go. Need Dir varaint"),
+        }
+    }
     fn root() -> Self {
         let root_name = String::from("/");
         Self {
