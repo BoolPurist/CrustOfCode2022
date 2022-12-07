@@ -1,6 +1,6 @@
 use clap::Parser;
 use solution_advent_of_code_2022::{
-    challenge_args::ChallangeArgs, day_01, day_02, day_03, day_04, day_05, day_06,
+    challenge_args::ChallangeArgs, day_01, day_02, day_03, day_04, day_05, day_06, day_07,
 };
 
 use std::fs;
@@ -15,6 +15,7 @@ const DAY_03: u32 = 3;
 const DAY_04: u32 = 4;
 const DAY_05: u32 = 5;
 const DAY_06: u32 = 6;
+const DAY_07: u32 = 7;
 
 fn main() {
     let mut args: ChallangeArgs = ChallangeArgs::parse();
@@ -96,6 +97,31 @@ fn solve_for_certain_day(args: &ChallangeArgs) {
                     "Start marker of 1. message ends at {}",
                     start_of_first_message
                 );
+            }
+            invalid_task => abort_for_invalid_task(invalid_task),
+        },
+        DAY_07 => match args.task {
+            TASK_ONE => {
+                const MAX: usize = 100000;
+                let number_with_at_most = day_07::get_number_size_at_most(&args.input, MAX);
+
+                println!(
+                    "Number of directory not greater than {}: {}",
+                    MAX, number_with_at_most
+                );
+            }
+            TASK_TWO => {
+                const TOTAL_FREE: day_07::SizeOfFile = 70_000_000;
+                const NEEDED_FREE: day_07::SizeOfFile = 30_000_000;
+
+                let (name, freed, needed) =
+                    day_07::get_directory_to_delete(&args.input, TOTAL_FREE, NEEDED_FREE);
+
+                println!("For the update {} bytes needed to freed.\nDirectory {} needs to be freed for {}", 
+                         needed, 
+                         name, 
+                         freed
+                         );
             }
             invalid_task => abort_for_invalid_task(invalid_task),
         },
