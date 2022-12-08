@@ -1,6 +1,6 @@
 use clap::Parser;
 use solution_advent_of_code_2022::{
-    challenge_args::ChallangeArgs, day_01, day_02, day_03, day_04, day_05, day_06, day_07,
+    challenge_args::ChallangeArgs, day_01, day_02, day_03, day_04, day_05, day_06, day_07, day_08
 };
 
 use std::fs;
@@ -17,6 +17,7 @@ const DAY_04: u32 = 4;
 const DAY_05: u32 = 5;
 const DAY_06: u32 = 6;
 const DAY_07: u32 = 7;
+const DAY_08: u32 = 8;
 
 fn main() {
     let mut args: ChallangeArgs = ChallangeArgs::parse();
@@ -131,6 +132,16 @@ fn solve_for_certain_day(args: &ChallangeArgs) {
             },
             invalid_task => abort_for_invalid_task(invalid_task),
         },
+        DAY_08 => match args.task {
+            TASK_ONE => {
+                let visible_trees_number = day_08::get_number_of_visible(&args.input);
+                println!("Number of visible trees {}", visible_trees_number);
+            }
+            TASK_TWO => {
+                todo!("No solution for task two");
+            },
+            invalid_task => abort_for_invalid_task(invalid_task),
+        } 
         unknown_day => abort_for_invalid_day(unknown_day),
     }
 }
