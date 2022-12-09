@@ -1,6 +1,7 @@
 use clap::Parser;
 use solution_advent_of_code_2022::{
-    challenge_args::ChallangeArgs, day_01, day_02, day_03, day_04, day_05, day_06, day_07, day_08
+    challenge_args::ChallangeArgs, 
+    day_01, day_02, day_03, day_04, day_05, day_06, day_07, day_08, day_09
 };
 
 use std::fs;
@@ -18,6 +19,7 @@ const DAY_05: u32 = 5;
 const DAY_06: u32 = 6;
 const DAY_07: u32 = 7;
 const DAY_08: u32 = 8;
+const DAY_09: u32 = 9;
 
 fn main() {
     let mut args: ChallangeArgs = ChallangeArgs::parse();
@@ -140,6 +142,19 @@ fn solve_for_certain_day(args: &ChallangeArgs) {
             TASK_TWO => {
                 let highest_score = day_08::get_max_scenic_score(&args.input);
                 println!("Highes scenic score: {}", highest_score );
+            },
+            invalid_task => abort_for_invalid_task(invalid_task),
+        }, 
+        DAY_09 => match args.task {
+            TASK_ONE => {
+                let number_visits = day_09::get_tail_vists_number(&args.input);
+                println!("Tail visited {} places", number_visits);
+                
+            }
+            TASK_TWO => {
+                const TAIL_LENGTH: usize = 9;
+                let number_visits = day_09::get_visted_number_of_last_tail(&args.input, TAIL_LENGTH);
+                println!("Tail visited {} places of length", number_visits);
             },
             invalid_task => abort_for_invalid_task(invalid_task),
         } 

@@ -1,0 +1,13 @@
+   Compiling solution_advent_of_code_2022 v0.1.0 (/home/nicegraphi/Code/rust/CrustOfCode2022/solution_advent_of_code_2022)
+error[E0507]: cannot move out of `sim.tail` which is behind a mutable reference
+  --> src/day_09.rs:80:18
+   |
+80 |             dbg!(sim.tail);
+   |             -----^^^^^^^^-
+   |             |    |
+   |             |    help: consider borrowing here: `&sim.tail`
+   |             data moved here
+   |             move occurs because `tmp` has type `Tail`, which does not implement the `Copy` trait
+
+For more information about this error, try `rustc --explain E0507`.
+error: could not compile `solution_advent_of_code_2022` due to previous error
