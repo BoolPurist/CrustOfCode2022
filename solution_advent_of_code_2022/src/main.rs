@@ -138,7 +138,8 @@ fn solve_for_certain_day(args: &ChallangeArgs) {
                 println!("Number of visible trees {}", visible_trees_number);
             }
             TASK_TWO => {
-                todo!("No solution for task two");
+                let highest_score = day_08::get_max_scenic_score(&args.input);
+                println!("Highes scenic score: {}", highest_score );
             },
             invalid_task => abort_for_invalid_task(invalid_task),
         } 

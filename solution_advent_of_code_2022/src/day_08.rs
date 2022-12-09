@@ -1,68 +1,186 @@
 use core::iter::repeat;
 use core::num::IntErrorKind;
-#[derive(Default, Debug, Clone, Copy, Eq, PartialEq, PartialOrd, Ord)]
-struct Digit(u8);
+
+use crate::sequences;
+
 type TreeGrid = Vec<Vec<Digit>>;
+type TreeVisibility = Vec<Vec<bool>>;
+type TreeSenicScores = Vec<Vec<usize>>;
+
+#[derive(Debug, Clone, Copy, Eq, PartialEq, PartialOrd, Ord)]
+struct Digit(i8);
+
 pub fn get_number_of_visible(input: &str) -> usize {
     let input_parsed = parse_input(input);
+    let visibility = inpect_grid_for_visible(&input_parsed);
 
-    let height = input_parsed.len();
-    let width = input_parsed
-        .iter()
-        .nth(1)
-        .expect("No single row in grid")
-        .len();
-    const FACTOR: usize = 2;
-    let visible_from_edges = (FACTOR * height) + (FACTOR * width) - 4usize;
-    let without_edges = get_view_no_edges(&input_parsed);
-    let o = get_visible_from_row(&vec![
-        Digit(2),
-        Digit(2),
-        Digit(4),
-        Digit(2),
-        Digit(5),
-        Digit(4),
-    ]);
-    dbg!(o);
-
-    let number_visible = visible_from_edges;
-
-    number_visible
+    visibility.iter().fold(usize::default(), |akk, row| {
+        akk + row.iter().fold(
+            usize::default(),
+            |akk, cell| if *cell { akk + 1 } else { akk },
+        )
+    })
 }
-#[derive(Debug)]
-struct DigitMaximum(usize, Digit);
-fn get_visible_from_row(row: &Vec<Digit>) -> Vec<bool> {
-    let length = row.len();
-    let mut output: Vec<bool> = repeat(false).take(length).collect();
 
-    let mut current_length = length;
-    let mut current_start: usize = 0;
-    let mut current_left_max = DigitMaximum(0, Digit::default());
-    let mut two_max_equal = false;
-    let mut current_right_max = DigitMaximum(0, Digit::default());
-    for i in (&row[current_start..current_length]).iter().enumerate() {
-        let (index, current_digit) = i;
+pub fn get_max_scenic_score(input: &str) -> usize {
+    let grid = parse_input(input);
+    let scores = create_grid_with_scenic_score(&grid);
 
-        if *current_digit > current_right_max.1 {
-            current_left_max = current_right_max;
-            two_max_equal = false;
-            current_right_max = DigitMaximum(index, current_digit.clone());
-        } else if *current_digit == current_right_max.1 {
-            if two_max_equal {
-                current_right_max = DigitMaximum(index, current_digit.clone());
-            } else {
-                current_left_max = current_right_max;
-                two_max_equal = true;
-                current_right_max = DigitMaximum(index, current_digit.clone());
-            }
+    scores
+        .iter()
+        .map(|row| *row.iter().max().expect("No maximum for a row"))
+        .max()
+        .expect("No maximum at all")
+}
+
+fn create_grid_with_scenic_score(grid: &TreeGrid) -> TreeSenicScores {
+    let height = grid.len();
+    let width = grid[0].len();
+
+    let mut scenic_scores: TreeSenicScores = sequences::create_grid_with_value(height, width, &1);
+
+    fill_grid_score_brute_force(grid, &mut scenic_scores);
+
+    scenic_scores
+}
+
+fn fill_grid_score_brute_force(grid: &TreeGrid, scores: &mut TreeSenicScores) {
+    let height = grid.len();
+    let width = grid[0].len();
+    // zero out first row
+    for x in 0..width {
+        scores[0][x] = 0;
+    }
+    // zero out last row
+    let last_row = scores.last_mut().unwrap();
+    for x in 0..width {
+        last_row[x] = 0;
+    }
+
+    for y in 1..(height - 1) {
+        *scores[y].first_mut().unwrap() = 0;
+        *scores[y].last_mut().unwrap() = 0;
+
+        let before_end = width - 1;
+        for x in 1..before_end {
+            let current_element = grid[y][x];
+
+            let to_up = (0..y).rev();
+            let to_down = (y + 1)..height;
+            let to_left = (0..x).rev();
+            let to_right = (x + 1)..width;
+
+            scores[y][x] *= get_view_dist_from_dim(to_up, &current_element, |next| grid[next][x]);
+
+            scores[y][x] *= get_view_dist_from_dim(to_down, &current_element, |next| grid[next][x]);
+
+            scores[y][x] *= get_view_dist_from_dim(to_left, &current_element, |next| grid[y][next]);
+
+            scores[y][x] *=
+                get_view_dist_from_dim(to_right, &current_element, |next| grid[y][next]);
         }
     }
 
-    output[current_left_max.0] = true;
-    output[current_right_max.0] = true;
-    output
+    fn get_view_dist_from_dim<F>(
+        dim: impl Iterator<Item = usize>,
+        current_element: &Digit,
+        indexer: F,
+    ) -> usize
+    where
+        F: Fn(usize) -> Digit,
+    {
+        let mut counter = 0;
+        for next in dim {
+            counter += 1;
+            let next_element = indexer(next);
+            if *current_element <= next_element {
+                break;
+            }
+        }
+
+        counter
+    }
 }
 
+#[allow(dead_code)]
+fn draw_visibility(draw_from: &TreeVisibility) -> String {
+    let chars: Vec<String> = draw_from
+        .iter()
+        .map(|row| {
+            let mut row_buffer = String::new();
+
+            for visible in row {
+                let next_char = if *visible { 'X' } else { '*' };
+                row_buffer.push(next_char);
+            }
+
+            row_buffer
+        })
+        .collect();
+
+    chars.join("\n")
+}
+
+fn inpect_grid_for_visible(grid: &TreeGrid) -> TreeVisibility {
+    let height = grid.len();
+    let width = grid[0].len();
+    let mut visibility = sequences::create_grid_with_default(height, width);
+
+    for next_row in 0..height {
+        let next_seq = get_iter_rows(next_row, width);
+        inspect_sequence_for_visble(grid, &mut visibility, next_seq);
+    }
+
+    for next_column in 0..width {
+        let next_seq = get_iter_column(next_column, height);
+        inspect_sequence_for_visble(grid, &mut visibility, next_seq);
+    }
+
+    visibility
+}
+
+fn get_iter_rows(row_index: usize, width: usize) -> Vec<(usize, usize)> {
+    repeat(row_index)
+        .take(width)
+        .enumerate()
+        .map(|x_y| (x_y.1, x_y.0))
+        .collect()
+}
+
+fn get_iter_column(column_index: usize, height: usize) -> Vec<(usize, usize)> {
+    repeat(column_index).take(height).enumerate().collect()
+}
+
+fn inspect_sequence_for_visble(
+    grid: &Vec<Vec<Digit>>,
+    visible: &mut Vec<Vec<bool>>,
+    mut sequence: Vec<(usize, usize)>,
+) {
+    // left
+    let mut last_max = Digit::default();
+
+    for (y, x) in sequence.iter() {
+        let current_digit = grid[*y][*x];
+        if current_digit > last_max {
+            last_max = current_digit.clone();
+            visible[*y][*x] = true;
+        }
+    }
+
+    // right
+    last_max = Digit::default();
+    sequence.reverse();
+
+    for (y, x) in sequence {
+        let current_digit = grid[y][x];
+        if current_digit > last_max {
+            last_max = current_digit.clone();
+            visible[y][x] = true;
+        }
+    }
+}
+
+#[allow(dead_code)]
 fn get_view_no_edges<'a>(with_edges: &'a TreeGrid) -> TreeGrid {
     let to_take = with_edges.len() - 2usize;
     with_edges
@@ -95,16 +213,14 @@ fn parse_input(input: &str) -> TreeGrid {
 impl Digit {
     fn from(digit: char) -> Result<Self, IntErrorKind> {
         let number: u32 = digit.to_digit(10).ok_or(IntErrorKind::InvalidDigit)?;
-        let shrinked = u8::try_from(number).map_err(|_| IntErrorKind::PosOverflow)?;
+        let shrinked = i8::try_from(number).map_err(|_| IntErrorKind::PosOverflow)?;
 
         Ok(Self(shrinked))
     }
+}
 
-    fn value(&self) -> u8 {
-        self.0
-    }
-
-    fn is_not_blocked_by(&self, other: &Self) -> bool {
-        other.0 < self.0
+impl Default for Digit {
+    fn default() -> Self {
+        Self(-1)
     }
 }
