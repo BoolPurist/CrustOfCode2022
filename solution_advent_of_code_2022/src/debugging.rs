@@ -8,6 +8,15 @@ macro_rules! print_banner {
         println!("{}", $c.repeat(80));
     };
 }
+#[macro_export]
+macro_rules! print_var {
+    ($c:tt) => {
+        println!("{}", $c);
+    };
+    ($l:tt, $c:tt) => {
+        println!("{}: {}", $l, $c);
+    };
+}
 pub fn print_grid<T>(grid: &Vec<Vec<T>>, sep: &str)
 where
     T: Display,

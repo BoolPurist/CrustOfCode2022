@@ -67,7 +67,6 @@ fn process_program(
     let mut signal_counter = cycle_offset;
     for current_cycle in 0..=up_to_cycle {
         if (signal_counter % cycle_steps) == 0 {
-            dbg!(current_cycle);
             let new_signal = (current_cycle as i64) * cpu.get_reg_v();
             signals.push(new_signal);
         }
@@ -76,8 +75,6 @@ fn process_program(
 
         signal_counter += 1;
     }
-
-    dbg!(&signals);
 
     signals
         .into_iter()
