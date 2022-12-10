@@ -33,24 +33,23 @@ fn draw_according_to_program(program: CpuProgram, height: usize, width: usize) -
     let pixels = height * width;
     let mut cpu = Cpu::new(program);
     let mut screen = String::with_capacity(pixels);
-    let mut cursor = 0;
-    for current_cycle in 1..=pixels {
-        cpu.next_cycle();
-        let current_x = cpu.get_reg_v();
-        let min_x = (current_x - 1) as usize;
-        let max_x = (current_x + 1) as usize;
 
-        if cursor >= min_x && cursor <= max_x {
-            screen.push('#');
-        } else {
-            screen.push('.');
+    for _ in 0..height {
+        for x in 0..width {
+            cpu.next_cycle();
+
+            let current_x = cpu.get_reg_v();
+            let min_x = (current_x - 1) as usize;
+            let max_x = (current_x + 1) as usize;
+
+            if x >= min_x && x <= max_x {
+                screen.push('#');
+            } else {
+                screen.push('.');
+            }
         }
 
-        cursor += 1;
-        if (current_cycle % width) == 0 {
-            cursor = 0;
-            screen.push('\n');
-        }
+        screen.push('\n');
     }
 
     screen
