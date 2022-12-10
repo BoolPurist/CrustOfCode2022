@@ -1,7 +1,7 @@
 use clap::Parser;
 use solution_advent_of_code_2022::{
     challenge_args::ChallangeArgs, 
-    day_01, day_02, day_03, day_04, day_05, day_06, day_07, day_08, day_09
+    day_01, day_02, day_03, day_04, day_05, day_06, day_07, day_08, day_09, day_10
 };
 
 use std::fs;
@@ -20,6 +20,7 @@ const DAY_06: u32 = 6;
 const DAY_07: u32 = 7;
 const DAY_08: u32 = 8;
 const DAY_09: u32 = 9;
+const DAY_10: u32 = 10;
 
 fn main() {
     let mut args: ChallangeArgs = ChallangeArgs::parse();
@@ -155,6 +156,27 @@ fn solve_for_certain_day(args: &ChallangeArgs) {
                 const TAIL_LENGTH: usize = 9;
                 let number_visits = day_09::get_visted_number_of_last_tail(&args.input, TAIL_LENGTH);
                 println!("Tail visited {} places of length", number_visits);
+            },
+            invalid_task => abort_for_invalid_task(invalid_task),
+        },
+        DAY_10 => match args.task {
+            TASK_ONE => {
+                const CYCLE_OFFSET: usize = 20;
+                const CYCLE_STEPS: usize = 40;
+                const MAX_CYCLE: usize = 220;
+                let total_signal_strength = day_10::get_signal_strength_up_to(&args.input, MAX_CYCLE, CYCLE_STEPS, CYCLE_OFFSET);
+                println!("Signal strength at cycle {} in {} steps and starting with offset {}: {}", 
+                         MAX_CYCLE, 
+                         CYCLE_STEPS, 
+                         CYCLE_OFFSET, 
+                         total_signal_strength);
+            }
+            TASK_TWO => {
+                const CRT_HEIGHT: usize = 6;
+                const CRT_WIDTH: usize = 40;
+
+                let drawing = day_10::get_drawing(&args.input, CRT_HEIGHT, CRT_WIDTH);
+                println!("{}", drawing);
             },
             invalid_task => abort_for_invalid_task(invalid_task),
         } 

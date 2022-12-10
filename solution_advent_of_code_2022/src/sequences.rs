@@ -20,3 +20,16 @@ where
 {
     create_grid_with_value(height, width, &Default::default())
 }
+
+pub fn grid_traverse_up(y: usize) -> impl Iterator<Item = usize> {
+    (0..y).rev()
+}
+pub fn grid_traverse_down(y: usize, height: usize) -> impl Iterator<Item = usize> {
+    (y + 1)..height
+}
+pub fn grid_traverse_left(x: usize) -> impl Iterator<Item = usize> {
+    (0..x).rev()
+}
+pub fn grid_traverse_right(x: usize, width: usize) -> impl Iterator<Item = usize> {
+    (x + 1)..width
+}

@@ -65,19 +65,28 @@ fn fill_grid_score_brute_force(grid: &TreeGrid, scores: &mut TreeSenicScores) {
         for x in 1..before_end {
             let current_element = grid[y][x];
 
-            let to_up = (0..y).rev();
-            let to_down = (y + 1)..height;
-            let to_left = (0..x).rev();
-            let to_right = (x + 1)..width;
-
-            scores[y][x] *= get_view_dist_from_dim(to_up, &current_element, |next| grid[next][x]);
-
-            scores[y][x] *= get_view_dist_from_dim(to_down, &current_element, |next| grid[next][x]);
-
-            scores[y][x] *= get_view_dist_from_dim(to_left, &current_element, |next| grid[y][next]);
-
             scores[y][x] *=
-                get_view_dist_from_dim(to_right, &current_element, |next| grid[y][next]);
+                get_view_dist_from_dim(sequences::grid_traverse_up(y), &current_element, |next| {
+                    grid[next][x]
+                });
+
+            scores[y][x] *= get_view_dist_from_dim(
+                sequences::grid_traverse_down(y, height),
+                &current_element,
+                |next| grid[next][x],
+            );
+
+            scores[y][x] *= get_view_dist_from_dim(
+                sequences::grid_traverse_left(x),
+                &current_element,
+                |next| grid[y][next],
+            );
+
+            scores[y][x] *= get_view_dist_from_dim(
+                sequences::grid_traverse_right(x, width),
+                &current_element,
+                |next| grid[y][next],
+            );
         }
     }
 
