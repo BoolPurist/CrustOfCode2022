@@ -164,10 +164,6 @@ impl Cpu {
         }
     }
 
-    fn adjust_to_next_line(&mut self, width: i64) {
-        self.register -= width;
-    }
-
     fn get_reg_v(&self) -> i64 {
         self.register
     }

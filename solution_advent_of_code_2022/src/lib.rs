@@ -1,7 +1,4 @@
 pub mod challenge_args;
-pub mod parsing;
-pub mod sequences;
-
 pub mod day_01;
 pub mod day_02;
 pub mod day_03;
@@ -12,3 +9,6 @@ pub mod day_07;
 pub mod day_08;
 pub mod day_09;
 pub mod day_10;
+pub mod debugging;
+pub mod parsing;
+pub mod sequences;
