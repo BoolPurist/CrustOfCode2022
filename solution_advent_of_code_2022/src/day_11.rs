@@ -1,7 +1,8 @@
+use crate::advent_math;
 use crate::parsing;
 use core::str::FromStr;
-use num::integer;
 use std::collections::VecDeque;
+
 type AmountUnit = usize;
 
 #[derive(Debug)]
@@ -86,7 +87,7 @@ fn get_lcm_from(monkeys: &VecDeque<Monkey>) -> AmountUnit {
 
     let mut lcm = modulars.next().unwrap();
     for current_modular in modulars {
-        lcm = integer::lcm(lcm, current_modular);
+        lcm = advent_math::get_lcm(lcm, current_modular);
     }
 
     lcm
