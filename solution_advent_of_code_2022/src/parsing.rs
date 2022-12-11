@@ -1,4 +1,6 @@
+use core::fmt::Debug;
 use regex::Regex;
+use std::str::FromStr;
 
 #[derive(Debug)]
 pub enum ExtraxtSeqRegexError {
@@ -26,6 +28,23 @@ pub fn get_seq_from_regex<'a>(
     }
 
     Ok(output)
+}
+
+pub fn get_parsed_sep_by<T>(line: &str, sep: &str) -> Vec<T>
+where
+    T: std::str::FromStr,
+    <T as FromStr>::Err: Debug,
+{
+    line.split(sep)
+        .map(|to_parse| to_parse.parse().expect("Could not parse to desired type"))
+        .collect()
+}
+
+pub fn strip_away_left_part<'a>(strip_away_from: &'a str, prefix: &str) -> &'a str {
+    strip_away_from
+        .trim()
+        .strip_prefix(prefix)
+        .expect("Could not strip away")
 }
 
 pub type Lines<'a> = Vec<&'a str>;

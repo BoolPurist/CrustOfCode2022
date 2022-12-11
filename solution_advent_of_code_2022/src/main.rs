@@ -1,7 +1,7 @@
 use clap::Parser;
 use solution_advent_of_code_2022::{
     challenge_args::ChallangeArgs, 
-    day_01, day_02, day_03, day_04, day_05, day_06, day_07, day_08, day_09, day_10
+    day_01, day_02, day_03, day_04, day_05, day_06, day_07, day_08, day_09, day_10, day_11
 };
 
 use std::fs;
@@ -21,6 +21,7 @@ const DAY_07: u32 = 7;
 const DAY_08: u32 = 8;
 const DAY_09: u32 = 9;
 const DAY_10: u32 = 10;
+const DAY_11: u32 = 11;
 
 fn main() {
     let mut args: ChallangeArgs = ChallangeArgs::parse();
@@ -179,7 +180,18 @@ fn solve_for_certain_day(args: &ChallangeArgs) {
                 println!("{}", drawing);
             },
             invalid_task => abort_for_invalid_task(invalid_task),
-        } 
+        },
+        DAY_11 => match args.task {
+            TASK_ONE => {
+                let monkey_business = day_11::calc_top_2_inspecting_number(&args.input);
+                println!("Monkey business of the 2 top most active monkeys: {}", monkey_business);
+            }
+            TASK_TWO => {
+                let monkey_business = day_11::calc_top_2_inspecting_number_no_relief(&args.input);
+                println!("Monkey business of the 2 top most active monkeys without relief: {}", monkey_business);
+            },
+            invalid_task => abort_for_invalid_task(invalid_task),
+        },
         unknown_day => abort_for_invalid_day(unknown_day),
     }
 }
