@@ -62,6 +62,26 @@ where
     split_lines_where(input, perdicate, false)
 }
 
+pub fn split_chunks_where<'a, P>(input: &'a str, perdicate: P) -> Vec<Vec<&'a str>>
+where
+    P: Fn(&str) -> bool,
+{
+    let mut chunks = Vec::new();
+    chunks.push(Vec::new());
+    let mut counter = 0;
+
+    for line in input.lines() {
+        if perdicate(line) {
+            chunks.push(Vec::new());
+            counter += 1;
+        } else {
+            chunks[counter].push(line);
+        }
+    }
+
+    chunks
+}
+
 fn split_lines_where<'a, P>(input: &'a str, perdicate: P, after: bool) -> (Lines<'a>, Lines<'a>)
 where
     P: Fn(&str) -> bool,

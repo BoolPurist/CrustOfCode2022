@@ -1,7 +1,7 @@
 use clap::Parser;
 use solution_advent_of_code_2022::{
     challenge_args::ChallangeArgs,
-    day_01, day_02, day_03, day_04, day_05, day_06, day_07, day_08, day_09, day_10, day_11
+    day_01, day_02, day_03, day_04, day_05, day_06, day_07, day_08, day_09, day_10, day_11, day_12,
 };
 
 use std::fs;
@@ -22,6 +22,7 @@ const DAY_08: u32 = 8;
 const DAY_09: u32 = 9;
 const DAY_10: u32 = 10;
 const DAY_11: u32 = 11;
+const DAY_12: u32 = 12;
 
 fn main() {
     let mut args: ChallangeArgs = ChallangeArgs::parse();
@@ -189,6 +190,18 @@ fn solve_for_certain_day(args: &ChallangeArgs) {
             TASK_TWO => {
                 let monkey_business = day_11::calc_top_2_inspecting_number_no_relief(&args.input);
                 println!("Monkey business of the 2 top most active monkeys without relief: {}", monkey_business);
+            },
+            invalid_task => abort_for_invalid_task(invalid_task),
+        },
+        DAY_12 => match args.task {
+            TASK_ONE => {
+                let costs = day_12::calc_path_with_fewest_steps(&args.input);
+                println!("Fewest steps required from start to end {}", costs);
+            }
+            TASK_TWO => {
+                let (coord, costs) = day_12::calc_path_from_any_a_fewest_steps(&args.input);
+                let (x, y) = coord;
+                println!("Fewest steps required from a ({},{}) to end {}", x, y, costs);
             },
             invalid_task => abort_for_invalid_task(invalid_task),
         },

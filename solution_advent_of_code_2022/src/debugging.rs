@@ -17,7 +17,7 @@ macro_rules! print_var {
         println!("{}: {}", $l, $c);
     };
 }
-pub fn print_grid<T>(grid: &Vec<Vec<T>>, sep: &str)
+pub fn grid_to_string<T>(grid: &Vec<Vec<T>>, sep: &str) -> String
 where
     T: Display,
 {
@@ -62,7 +62,7 @@ where
         write_to.push_str(&end_of_line);
     }
 
-    println!("{write_to}");
+    return write_to;
 
     fn write_one_line(write_to: &mut String, max_len: usize, line: &Vec<String>, sep: &str) {
         write_to.push_str(sep);
@@ -76,4 +76,11 @@ where
             write_to.push_str(sep);
         }
     }
+}
+
+pub fn print_grid<T>(grid: &Vec<Vec<T>>, sep: &str)
+where
+    T: Display,
+{
+    println!("{}", grid_to_string(grid, sep));
 }
