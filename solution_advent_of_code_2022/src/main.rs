@@ -1,7 +1,8 @@
 use clap::Parser;
 use solution_advent_of_code_2022::{
     challenge_args::ChallangeArgs,
-    day_01, day_02, day_03, day_04, day_05, day_06, day_07, day_08, day_09, day_10, day_11, day_12,
+    day_01, day_02, day_03, day_04, day_05, day_06, day_07, day_08, day_09, day_10, 
+    day_11, day_12, day_13
 };
 
 use std::fs;
@@ -23,6 +24,7 @@ const DAY_09: u32 = 9;
 const DAY_10: u32 = 10;
 const DAY_11: u32 = 11;
 const DAY_12: u32 = 12;
+const DAY_13: u32 = 13;
 
 fn main() {
     let mut args: ChallangeArgs = ChallangeArgs::parse();
@@ -202,6 +204,16 @@ fn solve_for_certain_day(args: &ChallangeArgs) {
                 let (coord, costs) = day_12::calc_path_from_any_a_fewest_steps(&args.input);
                 let (x, y) = coord;
                 println!("Fewest steps required from a ({},{}) to end {}", x, y, costs);
+            },
+            invalid_task => abort_for_invalid_task(invalid_task),
+        },
+        DAY_13 => match args.task {
+            TASK_ONE => {
+                let indices = day_13::get_sum_indicies(&args.input);
+                println!("Sum of indices for all packets in right order: {}", indices);
+            }
+            TASK_TWO => {
+                todo!("Day 13 with task 2 not implemented yet.");
             },
             invalid_task => abort_for_invalid_task(invalid_task),
         },
