@@ -65,3 +65,38 @@ fn parse_input(input: &str) -> Result<ElvesCalories, ParseIntError> {
 
     Ok(parsed)
 }
+
+#[cfg(test)]
+mod testing {
+
+    use super::*;
+
+    #[test]
+    fn test_get_max_calorie() {
+        // Set up
+        let input = vec![vec![2500, 3000, 1000, 10_000], vec![2500, 3000]];
+
+        // Act
+        let actual = get_max_calorie(&input);
+
+        // Assert
+        assert_eq!(16_500, actual);
+    }
+    #[test]
+    fn test_get_max_calorie_result() -> Result<(), String> {
+        const EXPECTED: u32 = 20_000;
+
+        // Set up
+        let input = vec![vec![10_000, 10_000], vec![2500, 3000]];
+
+        // Act
+        let actual = get_max_calorie(&input);
+
+        // Assert
+        if actual == EXPECTED {
+            Ok(())
+        } else {
+            Err(format!("{} != {}", EXPECTED, actual))
+        }
+    }
+}
